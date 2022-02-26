@@ -7,7 +7,7 @@ atrás…
 ## Integrantes del equipo
 
 >Lucía Pardo Hermosa (lucia-phermosa)
->
+>Javier Nicolao Gómez @JaviNico
 >Zeqi Lin @zeqilin
 
 ## Objetivos del trabajo
