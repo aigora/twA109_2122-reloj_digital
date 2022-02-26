@@ -5,6 +5,7 @@
 ## Integrantes del equipo
 
 Lucía Pardo Hermosa (lucia-phermosa)
+Zeqi Lin @zeqilin
 
 ## Objetivos del trabajo
 
