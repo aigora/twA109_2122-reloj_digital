@@ -5,7 +5,7 @@ móviles con sus diferentes funciones: marcar la hora, alarma, cronómetro, cuen
 atrás…
 ## Integrantes del equipo
 
->- Lucía Pardo Hermosa (lucia-phermosa)
+>- Lucía Pardo Hermosa @lucia-phermosa
 >- Javier Nicolao Gómez @JaviNico
 >- Zeqi Lin @zeqilin
 
