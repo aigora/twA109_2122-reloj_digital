@@ -6,11 +6,11 @@
 int main()
 {
 	Serial* Arduino;
-	char puerto[] = "COM5"; // Puerto serie en el que est¨¢ conectado Arduino
+	char puerto[] = "COM5"; // Puerto serie en el que estÂ¨Â¢ conectado Arduino
 	char BufferEntrada[200];
 	int bytesRecibidos;
 
-	Arduino = new Serial((char*)puerto); // Crea conexi¨®n l¨®gica con Arduino
+	Arduino = new Serial((char*)puerto); // Crea conexiÂ¨Â®n lÂ¨Â®gica con Arduino
 	if (Arduino->IsConnected())
 		printf("Arduino conectado\n");
 	else
