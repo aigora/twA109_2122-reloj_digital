@@ -1,3 +1,8 @@
+#include "SerialClass.h" // Biblioteca para acceder al puerto serie
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
 Serial* Arduino;
 char puerto[] = "COM5"; // Puerto serie en el que est¨¢ conectado Arduino
 char BufferEntrada[200];
@@ -19,4 +24,5 @@ while (Arduino->IsConnected())
 	}
 	else
 		Sleep(1000);
+}
 }
