@@ -22,3 +22,5 @@ atrás…
 >2. Crear nueva alarma
 >3. Eliminar alarma programada.
 >4. Mostrar histórico de las medidas cronometradas.
+
+>En cualquier caso, esté o no conectado el arduino, seguirá mostrando la hora.
