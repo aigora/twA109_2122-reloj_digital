@@ -76,7 +76,7 @@ void listado(Nodo* lista)
 {
 	Nodo* p;
 	if (lista == NULL)
-		printf("En este momento no hay alarmas en la aplicaci¨®n\n");
+		printf("En este momento no hay alarmas en la aplicaciÂ¨Â®n\n");
 	else
 	{
 		printf("login\thora\tmin\tseg\n");
@@ -97,7 +97,7 @@ int eliminar(Nodo** lista)
 	int encontrado = NO;
 	Nodo* p, * q;
 	if (*lista == NULL)
-		printf("La lista est¨¢ vac¨ªa\n");
+		printf("La lista estÂ¨Â¢ vacÂ¨Âªa\n");
 	else
 	{
 		printf("Introduzca nombre de alarma a eliminar:");
@@ -124,7 +124,7 @@ int eliminar(Nodo** lista)
 				}
 			}
 			else
-				if (p != q) // No se avanza el puntero q en la primera iteraci¨®n
+				if (p != q) // No se avanza el puntero q en la primera iteraciÂ¨Â®n
 					q = q-> enlace;
 		}
 		if (encontrado == NO)
@@ -143,18 +143,18 @@ int menu_ppal2(void)
 
 	do
 	{
-		printf("Men¨² principal\n");
+		printf("MenÂ¨Â² principal\n");
 		printf("================================\n");
 		printf("1. Consultar alarmas programadas\n");
 		printf("2. Crear nueva alarma\n");
 		printf("3. Eliminar alarma programada\n");
-		printf("4. Mostrar hist¨®rico de las medidas cronometradas\n");
+		printf("4. Mostrar histÂ¨Â®rico de las medidas cronometradas\n");
 		printf("5. Salir\n");
-		printf("Elija una opci¨®n: ");
+		printf("Elija una opciÂ¨Â®n: ");
 		scanf_s("%d", &opc);
 
 		if (opc == 0 || opc > 5)
-			printf("Opci¨®n incorrecta");
+			printf("OpciÂ¨Â®n incorrecta");
 
 	} while (opc == 0 || opc > 5);
 
