@@ -62,19 +62,6 @@ int main(void)
 		case 5: break;
 		}
 	}
-	
-	while (Arduino->IsConnected())
-	{
-
-		bytesRecibidos = Arduino->ReadData(BufferEntrada, sizeof(char) * 199);
-		if (bytesRecibidos != -1) // Lectura de mensaje desde el puerto
-		{
-			BufferEntrada[bytesRecibidos - 1] = '\0';
-			printf(" %s\n", BufferEntrada);
-		}
-		else
-			Sleep(1000);
-	}
 }
 
 // Menú principal si el Arduino está conectado
