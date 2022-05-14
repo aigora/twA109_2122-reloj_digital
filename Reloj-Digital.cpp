@@ -35,7 +35,7 @@ int main(void)
 		switch (opcion)
 		{
 		case 1: 
-				while (Arduino->IsConnected())
+				if (Arduino->IsConnected())
 			        {
 				    fyh = Date_Time();
 
