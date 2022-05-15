@@ -26,14 +26,15 @@ void setup(){
   
 
   // Comprobamos que el RTC funciona
-  if (! rtc.begin()) {
-    lcd.setCursor(1,0);
-    imprimir("RTC NOT FOUND!");
+  if (! rtc.begin()) 
+  {
+    imprimir("No se encontro el RTC");
     lcd.flush();
     while (1) delay(10);
   }
 
-  if (! rtc.isrunning()) {
+  if (! rtc.isrunning())
+  {
     imprimir("RTC no esta en funcionamiento!");
     
     // Ajustamos el RTC a la fecha y hora de la compilación
@@ -87,8 +88,13 @@ void imprimir(String cadena)
   
   n=cadena.length();
 
-  for(i=0;i<n;i++)
+  for (i=0;i<n;i++)
   {
+    if (i>15)
+    {
+      delay(900);
+      lcd.scrollDisplayLeft();
+    }
     lcd.write(cadena.charAt(i));
   }
 }
