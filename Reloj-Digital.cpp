@@ -30,11 +30,13 @@ int main(void)
 
 	if (Arduino->IsConnected()) // Si está conectado Arduino
 	{
-		opcion = menu_ppal1();
-
-		switch (opcion)
+		do
 		{
-		case 1: 
+			opcion = menu_ppal1();
+
+		        switch (opcion)
+		        {
+		        case 1: 
 				if (Arduino->IsConnected())
 			        {
 				    fyh = Date_Time();
@@ -44,23 +46,30 @@ int main(void)
 				    Arduino->WriteData(fechayhora, strlen(fechayhora));
 			        }
 				break;
-		case 2: break;
-		case 3: break;
-		case 4: break;
-		}
+		        case 2: break;
+		        case 3: break;
+		        case 4: break;
+		        }
+			
+		}while (opcion != 4);
+		
 	}
 	else // Si no está conectado Arduino
 	{
-		opcion = menu_ppal2();
-
-		switch (opcion)
+		do
 		{
-		case 1: break;
-		case 2: break;
-		case 3: break;
-		case 4: break;
-		case 5: break;
-		}
+			opcion = menu_ppal2();
+
+		        switch (opcion)
+		        {
+		        case 1: break;
+		        case 2: break;
+		        case 3: break;
+		        case 4: break;
+		        case 5: break;
+		        }
+			
+		}while (opcion != 5);
 	}
 }
 
@@ -71,6 +80,7 @@ int menu_ppal1(void)
 
 	do
 	{
+		printf("=================================\n");
 		printf("Menú principal\n");
 		printf("=================================\n");
 		printf("1. Ajustar fecha y hora del reloj\n");
@@ -95,6 +105,7 @@ int menu_ppal2(void)
 
 	do
 	{
+		printf("=================================\n");
 		printf("Menú principal\n");
 		printf("================================\n");
 		printf("1. Consultar alarmas programadas\n");
