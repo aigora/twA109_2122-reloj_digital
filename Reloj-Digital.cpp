@@ -1,4 +1,4 @@
-#include "SerialPort.h" // Biblioteca para acceder al puerto serie
+#include "SerialClass.h" // Biblioteca para acceder al puerto serie
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
