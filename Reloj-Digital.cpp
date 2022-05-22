@@ -1,4 +1,4 @@
-#include "SerialClass/SerialClass.h" // Biblioteca para acceder al puerto serie
+#include "SerialClass.h" // Biblioteca para acceder al puerto serie
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -45,7 +45,7 @@ void hora(int tiempo, int v[], int n);
 void guardar_en_disco(int v[], int n);
 int leer_desde_disco(int v[]);
 void consultar_cronos(void);
-void alarma leer(void);
+alarma leer(void);
 int nueva_alarma(Nodo** plista);
 void mostrar_datos_usuario(alarma a);
 void listado(Nodo* lista);
@@ -439,7 +439,7 @@ void consultar_cronos(void)
 	}
 }
 
-void alarma leer(void)
+alarma leer(void)
 {
 	getchar();
 	alarma alarma;
