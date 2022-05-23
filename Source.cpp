@@ -31,8 +31,9 @@ int eliminar(Nodo** lista);
 int menu_ppal2(void);
 void verifica_sensores(Serial* Arduino, Nodo* lista);
 void leer_sensor_distancia(Serial* Arduino, alarma a);
-void leer_cont(Serial* Arduino, char c[LONGCAD]);
 int Enviar_y_Recibir(Serial* Arduino, const char* mensaje_enviar, char* mensaje_recibir);
+int escribir_fichero_usuarios_v3(Nodo* lista);
+Nodo* leer_fichero_usuarios_v3(void);
 
 alarma leer(void)
 {
@@ -204,6 +205,7 @@ int main(void)
 		switch (opcion)
 		{
 		case 1:
+			
 			listado(lista);
 			break;
 		case 2:
@@ -216,11 +218,12 @@ int main(void)
 			break;
 
 		case 4:
-			sprintf_s(cad, "%d", c);
-			leer_cont(Arduino, cad);
+			lista=leer_fichero_usuarios_v3();
 			verifica_sensores(Arduino, lista);
 			break;
-
+		case 5:
+			escribir_fichero_usuarios_v3(lista);
+			break;
 		}
 	} while (opcion != 5);
 }
@@ -252,24 +255,7 @@ void verifica_sensores(Serial* Arduino,Nodo*lista)
 
 }
 
-void leer_cont(Serial* Arduino, char c[LONGCAD])
-{
-	int bytesRecibidos;
-	char mensaje_recibido[MAX_BUFFER];
-	bytesRecibidos = Enviar_y_Recibir(Arduino, c, mensaje_recibido);
-	if (bytesRecibidos <= 0)
-	{
-		printf("\nNo se ha recibido respuesta a la petición\n");
-		
-	}
-	else
-	{
-		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
-			mensaje_recibido);
 
-	}
-
-}
 
 void leer_sensor_distancia(Serial* Arduino,alarma a)
 {
@@ -291,10 +277,65 @@ void leer_sensor_distancia(Serial* Arduino,alarma a)
 	}
 
 	bytesRecibidos = Enviar_y_Recibir(Arduino, a.anio, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
 	bytesRecibidos = Enviar_y_Recibir(Arduino, a.mes, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
 	bytesRecibidos = Enviar_y_Recibir(Arduino, a.dia, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
 	bytesRecibidos = Enviar_y_Recibir(Arduino, a.h, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
 	bytesRecibidos = Enviar_y_Recibir(Arduino, a.m, mensaje_recibido);
+		if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+		
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
 	bytesRecibidos = Enviar_y_Recibir(Arduino, a.s, mensaje_recibido);
 	if (bytesRecibidos <= 0)
 	{
@@ -333,4 +374,57 @@ int Enviar_y_Recibir(Serial* Arduino, const char* mensaje_enviar, char* mensaje_
 	if (total > 0)
 		mensaje_recibir[total - 1] = '\0';
 	return total;
+}
+
+
+int escribir_fichero_usuarios_v3(Nodo* lista)
+{
+	FILE* fichero;
+	errno_t err;
+	err = fopen_s(&fichero, "Usuarios.bin", "wb");
+	if (err == 0) // Si el fichero se ha podido crear
+	{
+		while (lista != NULL)
+		{
+			fwrite(&lista->alarma, sizeof(alarma), 1, fichero);
+			lista = lista->enlace;
+		}
+		fclose(fichero);
+	}
+	else
+		printf("Se ha producido un problema a la hora de grabar el fichero de usuarios\n");
+			return err;
+}
+
+Nodo* leer_fichero_usuarios_v3(void)
+{
+	Nodo* p, * cab = NULL;
+	alarma u;
+	FILE* fichero; // Puntero para manipular el fichero
+	errno_t cod_error; // Código de error tras el proceso de apertura.
+	cod_error = fopen_s(&fichero, "Usuarios.bin", "rb"); // Se intenta abrir el fichero
+	if (cod_error != 0) // Si el fichero no se ha podido abrir
+		cab = NULL; // La lista estará vacía
+	else // Si el fichero ha podido abrirse
+	{
+		fread_s(&u, sizeof(alarma), sizeof(alarma), 1, fichero);
+		while (!feof(fichero))
+		{
+			p = (Nodo*)malloc(sizeof(Nodo));
+			if (p == NULL)
+			{
+				printf("Memoria insuficiente para leer el fichero\n");
+				break;
+			}
+			else
+			{
+				p->alarma = u;
+				p->enlace = cab;
+				cab = p;
+			}
+			fread_s(&u, sizeof(alarma), sizeof(alarma), 1, fichero);
+		}
+		fclose(fichero);
+	}
+	return cab;
 }
