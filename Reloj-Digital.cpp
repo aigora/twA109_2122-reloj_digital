@@ -6,6 +6,7 @@
 #include <string.h>
 #include <conio.h>
 
+#define _CRIT_SECURE_NO_WARNINGS
 #define TAM 30
 #define MAX_BUFFER 200
 #define PAUSA_MS 200
@@ -16,10 +17,13 @@
 
 typedef struct 
 {
-	int h;
-	int m;
-	int s;
 	char login[LONGCAD];
+	char anio[LONGCAD];
+	char mes[LONGCAD];
+	char dia[LONGCAD];
+	char h[LONGCAD];
+	char m[LONGCAD];
+	char s[LONGCAD];
 }alarma;
 
 struct item
@@ -50,14 +54,19 @@ int nueva_alarma(Nodo** plista);
 void mostrar_datos_usuario(alarma a);
 void listado(Nodo* lista);
 int eliminar(Nodo** lista);
+int escribir_fichero_usuarios_v3(Nodo* lista);
+Nodo* leer_fichero_usuarios_v3(void);
 
 int main(void)
 {
-	int opcion;
-	int opcion_menu;
 	Serial* Arduino;
 	char puerto[] = "COM6"; // Puerto serie en el que esté conectado Arduino
 	Nodo* lista = NULL;
+	int opcion;
+	int opcion_menu;
+	int c = 0;
+	char opc;
+	char cad[LONGCAD];
 	char fechayhora[TAM];
 	char* fyh;
 	
@@ -70,6 +79,8 @@ int main(void)
 		do
 		{
 			opcion = menu_ppal1();
+			opc = opcion + '0';
+			Arduino->WriteData(&opc, 1);
 
 		        switch (opcion)
 		        {
@@ -83,7 +94,10 @@ int main(void)
 				    Arduino->WriteData(fechayhora, strlen(fechayhora));
 			        }
 				break;
-		        case 2: break;
+		        case 2: 
+				lista=leer_fichero_usuarios_v3();
+			        verifica_sensores(Arduino, lista);
+			        break;
 		        case 3:
 				do
 		                {
@@ -122,13 +136,23 @@ int main(void)
 
 		        switch (opcion)
 		        {
-		        case 1: break;
-		        case 2: break;
-		        case 3: break;
+		        case 1: 
+				listado(lista);
+				break;
+		        case 2: 
+				nueva_alarma(&lista);
+			        c++;	
+				break;
+		        case 3: 
+				eliminar(&lista);
+			        c--;	
+				break;
 		        case 4:
 				consultar_cronos();
 				break;
-		        case 5: break;
+		        case 5:
+				escribir_fichero_usuarios_v3(lista);
+				break;
 		        }
 			
 		}while (opcion != 5);
@@ -549,4 +573,56 @@ int eliminar(Nodo** lista)
 	}
 	getchar();
 	return encontrado;
+}
+
+int escribir_fichero_usuarios_v3(Nodo* lista)
+{
+	FILE* fichero;
+	errno_t err;
+	err = fopen_s(&fichero, "Usuarios.bin", "wb");
+	if (err == 0) // Si el fichero se ha podido crear
+	{
+		while (lista != NULL)
+		{
+			fwrite(&lista->alarma, sizeof(alarma), 1, fichero);
+			lista = lista->enlace;
+		}
+		fclose(fichero);
+	}
+	else
+		printf("Se ha producido un problema a la hora de grabar el fichero de usuarios\n");
+			return err;
+}
+
+Nodo* leer_fichero_usuarios_v3(void)
+{
+	Nodo* p, * cab = NULL;
+	alarma u;
+	FILE* fichero; // Puntero para manipular el fichero
+	errno_t cod_error; // Código de error tras el proceso de apertura.
+	cod_error = fopen_s(&fichero, "Usuarios.bin", "rb"); // Se intenta abrir el fichero
+	if (cod_error != 0) // Si el fichero no se ha podido abrir
+		cab = NULL; // La lista estará vacía
+	else // Si el fichero ha podido abrirse
+	{
+		fread_s(&u, sizeof(alarma), sizeof(alarma), 1, fichero);
+		while (!feof(fichero))
+		{
+			p = (Nodo*)malloc(sizeof(Nodo));
+			if (p == NULL)
+			{
+				printf("Memoria insuficiente para leer el fichero\n");
+				break;
+			}
+			else
+			{
+				p->alarma = u;
+				p->enlace = cab;
+				cab = p;
+			}
+			fread_s(&u, sizeof(alarma), sizeof(alarma), 1, fichero);
+		}
+		fclose(fichero);
+	}
+	return cab;
 }
