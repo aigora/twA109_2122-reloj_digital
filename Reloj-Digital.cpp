@@ -507,20 +507,18 @@ int nueva_alarma(Nodo** plista)
 void mostrar_datos_usuario(alarma a)
 {
 	printf("%s\t", a.login);
-	printf("%d\t", a.h);
-	printf("%d\t", a.m);
-	printf("%d\n", a.s);
-	
+	printf("%s/%s/%s\t", a.dia, a.mes, a.anio);
+	printf("%s:%s:%s\n", a.h, a.m, a.s);
 }
 
 void listado(Nodo* lista)
 {
 	Nodo* p;
 	if (lista == NULL)
-		printf("En este momento no hay alarmas en la aplicaci¨®n\n");
+		printf("En este momento no hay alarmas en la aplicación\n");
 	else
 	{
-		printf("login\thora\tmin\tseg\n");
+		printf("nombre\tfecha\t\thora\n");
 		printf("======\t==============\t=====\n");
 		for (p = lista;p != NULL;p = (Nodo*)p->enlace)
 		{
@@ -549,9 +547,9 @@ int eliminar(Nodo** lista)
 		{
 			if (strcmp(login, p-> alarma.login) == 0)
 			{
-				printf("Datos del usuario encontrado:\n");
+				printf("Datos de la alarma encontrada:\n");
 				mostrar_datos_usuario(p-> alarma);
-				printf("Desea borra este usuario (S/N):");
+				printf("Desea borrar esta alarma? (S/N):");
 				gets_s(respuesta, 2);
 				if (strcmp(respuesta, "S") == 0 || strcmp(respuesta, "s") == 0)
 				{
@@ -565,11 +563,11 @@ int eliminar(Nodo** lista)
 				}
 			}
 			else
-				if (p != q) // No se avanza el puntero q en la primera iteraci¨®n
+				if (p != q) // No se avanza el puntero q en la primera iteración
 					q = q-> enlace;
 		}
 		if (encontrado == NO)
-			printf("No se ha encontrado el usuario\n");
+			printf("No se ha encontrado la alarma\n");
 	}
 	getchar();
 	return encontrado;
