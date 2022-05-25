@@ -58,7 +58,6 @@ int escribir_fichero_usuarios_v3(Nodo*);
 Nodo* leer_fichero_usuarios_v3(void);
 void verifica_sensores(Serial*, Nodo*);
 void leer_sensor_distancia(Serial*, alarma);
-void leer_cont(Serial*, char []);
 
 int main(void)
 {
@@ -145,11 +144,9 @@ int main(void)
 				break;
 		        case 2: 
 				nueva_alarma(&lista);
-			        c++;	
 				break;
 		        case 3: 
 				eliminar(&lista);
-			        c--;	
 				break;
 		        case 4:
 				consultar_cronos();
@@ -543,7 +540,6 @@ void listado(Nodo* lista)
 	}
 }
 
-
 int eliminar(Nodo** lista)
 {
 	getchar();
@@ -611,25 +607,6 @@ void verifica_sensores(Serial* Arduino, Nodo* lista)
 	else
 	{
 		printf("Arduino no conectado");
-	}
-
-}
-
-void leer_cont(Serial* Arduino, char c[LONGCAD])
-{
-	int bytesRecibidos;
-	char mensaje_recibido[MAX_BUFFER];
-	bytesRecibidos = Enviar_y_Recibir(Arduino, c, mensaje_recibido);
-	if (bytesRecibidos <= 0)
-	{
-		printf("\nNo se ha recibido respuesta a la petición\n");
-
-	}
-	else
-	{
-		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
-			mensaje_recibido);
-
 	}
 
 }
