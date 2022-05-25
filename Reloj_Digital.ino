@@ -3,13 +3,11 @@
 #include <Wire.h>
 #include <Separador.h>
 
+#define pinBuzzer 9
+#define TAM 20
+
 RTC_DS1307 rtc;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-// GND pin al pin tierra en el arduino
-// VCC pin al pin 5V en el arduino
-// SDA pin al pin A4 en el arduino
-// SCL pin al pin A5 en el arduino
 
 struct fyhalarma
 {
@@ -25,12 +23,17 @@ void imprimir(String cadena);
 void obtener_datos_visual(void);
 void Date_Time(void);
 void alarma(void);
+void tono_alarma(void);
+void comprobar_alarmas(void);
 void cronometro(void);
 
 // Declaración de variables
 char opcion = '0';
 char opc = '0';
 String total;
+
+fyhalarma alarmas[TAM];
+int total_alarmas=0;
 
 int horas = 0;     
 int minutos = 0;     
@@ -42,15 +45,56 @@ int cuenta;
 int a = 0;
 int b = 0;
 
-const int pinBuzzer = 9;
-int f=0;
+// Notas para el tono de la alarma
+// Canción: Bella Ciao
+int Si2 =1975;
+int LaS2=1864;
+int La2= 1760;
+int SolS2=1661;
+int Sol2=1567;
+int FaS2=1479;
+int Fa2= 1396;
+int Mi2= 1318;
+int ReS2=1244;
+int Re2= 1174;
+int DoS2=1108;
+int Do2= 1046;
+
+int Si = 987;
+int LaS= 932;
+int La = 880;
+int SolS=830;
+int Sol= 783;
+int FaS= 739;
+int Fa=  698;
+int Mi=  659;
+int ReS= 622;
+int Re = 587;
+int DoS =554;
+int Do = 523;
+
+int rounda=0;
+int roundp=0;
+int white= 0;
+int whitep=0;
+int black=0;  
+int blackp=0;
+int quaver=0;
+int quaverp =0;
+int semiquaver=0;
+int semiquaverp=0;
+int bpm= 120;
 
 void setup(){
   Serial.begin(9600);
 
+  pinMode(pinBuzzer , OUTPUT);  //definir buzzer como salida
+  
   // Inicializamos la pantalla LCD
   lcd.init();
   lcd.backlight();
+  
+  rtc.begin();
 
   #ifndef ESP8266
      while (!Serial); // Esperando conexión
@@ -71,6 +115,18 @@ void setup(){
     // Ajustamos el RTC a la fecha y hora de la compilación
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
+  
+  // Definir notas alarma
+  black= 35000/bpm; 
+  blackp=black*1.5;
+  white= black*2;
+  whitep=white*1.5;
+  rounda= black*4;
+  roundp= rounda*1.5;
+  quaver= black/2;
+  quaverp=quaver*1.5;
+  semiquaver= black/4;
+  semiquaverp=semiquaver*1.5;
 }
 
 void loop(){
@@ -80,6 +136,7 @@ void loop(){
     case principal:
     {
       Date_Time();
+      comprobar_alarmas();
       if(Serial.available()>0)
       {
         opc = Serial.read();
@@ -113,19 +170,6 @@ void loop(){
     case crono:
     {
       cronometro();
-      if(Serial.available()>0)
-      {
-        opc = Serial.read();
-        if(opc == '1')
-           estado = hora;
-        else
-        {
-          if(opc == '2')
-             estado = alarm;
-          else
-               estado = principal;
-        }
-      }
       break;  
     }
   }
@@ -288,26 +332,12 @@ void cronometro(void)
 void alarma(void)
 {
   String c, str;
-  int n = 1;
-  int anio = 1;
-  int mes = 2;
-  int dia = 3;
-  int h = 4;
-  int m = 5;
-  int s = 6;
-  int i, j;
-
-
-  fyhalarma*alarma;
-
+  int i;
 
   if ( Serial.available() > 0) // Si hay datos disponibles en el puerto serie.
   {
+      i = total_alarmas;
 
-
-    alarma = (fyhalarma*)malloc(sizeof(fyhalarma) * n);
-    for (i = 0; i < n; i++)
-    {
       str = Serial.readStringUntil('\n');
       alarma[i].login = str;
       Serial.println(str);// Envía la respuesta a través del puerto serie.
@@ -329,27 +359,111 @@ void alarma(void)
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
       alarma[i].s = str.toInt();
       Serial.println(str);
-      n++;
-      alarma = (fyhalarma*)realloc(alarma, sizeof(fyhalarma) * n);
       
-    }
+      total_alarmas++;
+      
   }
+}
+
+void comprobar_alarmas(void)
+{
+  int j;
+
+  DateTime now = rtc.now();
+  for(j=0;j<total_alarmas;j++)
+  {
+   if (alarmas[j].anio == now.year() && alarmas[j].mes == now.month() && alarmas[j].dia == now.day() && alarmas[j].h == now.hour() && alarmas[j].m == now.minute() && alarmas[j].s == now.second())
+      tono_alarma();
+  }
+}
+
+void tono_alarma(void)
+{
+  tone(pinBuzzer,Mi,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
+  delay(black+50);
+  tone(pinBuzzer,Si,black);
+  delay(black+50);
+  tone(pinBuzzer,Do2,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
   
-  for(i=0;i<n;i++)
-  {
-  if (alarma[i].anio == anio && alarma[i].mes == mes && alarma[i].dia == dia && alarma[i].h == h && alarma[i].m == m && alarma[i].s == s)
-  {
-    //generar tono de 440Hz durante 1000 ms
-    tone(pinBuzzer, 440);
-    delay(1000);
-    //detener tono durante 500ms
-    noTone(pinBuzzer);
-    delay(500);
-    //generar tono de 523Hz durante 500ms, y detenerlo durante 500ms.
-    tone(pinBuzzer, 523, 300);
-    delay(500);
-
-  }
-
- }
+  delay(2*white+50);
+  
+  tone(pinBuzzer,Mi,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
+  delay(black+50);
+  tone(pinBuzzer,Si,black);
+  delay(black+50);
+  tone(pinBuzzer,Do2,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
+  
+  delay(2*white+50);
+  
+  tone(pinBuzzer,Mi,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
+  delay(black+50);
+  tone(pinBuzzer,Si,black);
+  delay(black+50);
+  tone(pinBuzzer,Do2,white*1.3);
+  delay(2*black+50);
+  
+  tone(pinBuzzer,Si,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
+  delay(black+50);
+  tone(pinBuzzer,Do2,white*1.3);
+  delay(2*black+50);
+  
+  tone(pinBuzzer,Si,black);
+  delay(black+50);
+  tone(pinBuzzer,La,black);
+  delay(black+50);
+  tone(pinBuzzer,Mi2,black);
+  delay(white+50);
+  tone(pinBuzzer,Mi2,black);
+  delay(white+100);
+  
+  tone(pinBuzzer,Mi2,black);
+  delay(white+50);
+  tone(pinBuzzer,Re2,black);
+  delay(black+50);
+  tone(pinBuzzer,Mi2,black);
+  delay(black+50);
+  tone(pinBuzzer,Fa2,black);
+  delay(black+50);
+  tone(pinBuzzer,Fa2,white*1.3);
+  delay(rounda+100);
+  
+  tone(pinBuzzer,Fa2,black);
+  delay(black+50);
+  tone(pinBuzzer,Mi2,black);
+  delay(black+50);
+  tone(pinBuzzer,Re2,black);
+  delay(black+50);
+  tone(pinBuzzer,Fa2,black);
+  delay(black+50);
+  tone(pinBuzzer,Mi2,white*1.3);
+  delay(rounda+100);
+  
+  tone(pinBuzzer,Mi2,black);
+  delay(black+50);
+  tone(pinBuzzer,Re2,black);
+  delay(black+50);
+   tone(pinBuzzer,Do2,black);
+  delay(black+50);
+  tone(pinBuzzer,Si,white*1.3);
+  delay(white+50);
+  tone(pinBuzzer,Mi2,white*1.3);
+  delay(white+50);
+  tone(pinBuzzer,Si,white*1.3);
+  delay(white+50);
+  tone(pinBuzzer,Do2,white*1.3);
+  delay(white+50);
+  tone(pinBuzzer,La,rounda*1.3);
+  delay(rounda+50);
 }
