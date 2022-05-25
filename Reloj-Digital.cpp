@@ -44,23 +44,26 @@ void pausa(Serial* Arduino);
 void reset(Serial* Arduino);
 void comprobar_mensajes(Serial*);
 int Enviar_y_Recibir(Serial*, const char*, char*);
-int cadena(char* cadena);
-void hora(int tiempo, int v[], int n);
-void guardar_en_disco(int v[], int n);
-int leer_desde_disco(int v[]);
+int cadena(char*);
+void hora(int tiempo, int [], int);
+void guardar_en_disco(int [], int);
+int leer_desde_disco(int []);
 void consultar_cronos(void);
 alarma leer(void);
-int nueva_alarma(Nodo** plista);
-void mostrar_datos_usuario(alarma a);
-void listado(Nodo* lista);
-int eliminar(Nodo** lista);
-int escribir_fichero_usuarios_v3(Nodo* lista);
+int nueva_alarma(Nodo**);
+void mostrar_datos_usuario(alarma);
+void listado(Nodo*);
+int eliminar(Nodo**);
+int escribir_fichero_usuarios_v3(Nodo*);
 Nodo* leer_fichero_usuarios_v3(void);
+void verifica_sensores(Serial*, Nodo*);
+void leer_sensor_distancia(Serial*, alarma);
+void leer_cont(Serial*, char []);
 
 int main(void)
 {
 	Serial* Arduino;
-	char puerto[] = "COM6"; // Puerto serie en el que esté conectado Arduino
+	char puerto[] = "COM4"; // Puerto serie en el que esté conectado Arduino
 	Nodo* lista = NULL;
 	int opcion;
 	int opcion_menu;
@@ -76,6 +79,7 @@ int main(void)
 
 	if (Arduino->IsConnected()) // Si está conectado Arduino
 	{
+		printf("Arduino conectado\n");
 		do
 		{
 			opcion = menu_ppal1();
@@ -252,8 +256,8 @@ char* Date_Time()
 // Función para hacer el formato con el que se va a imprimir la fecha y hora
 char* formato_time(const struct tm* timeptr)
 {
-	//static char result[TAM];
 	char* result = NULL;
+	
 	result = (char*)malloc(sizeof(char) * TAM);
 	if (result == NULL)
 		printf("AVISO: Memoria insuficiente\n");
@@ -261,7 +265,7 @@ char* formato_time(const struct tm* timeptr)
 	{
 		sprintf(result, "%.2d/%.2d/%d  %.2d:%.2d:%.2d\n", timeptr->tm_mday, 1 + timeptr->tm_mon, 1900 + timeptr->tm_year, timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
 	}
-	  return result;
+	 return result;
 }
 
 void comprobar_mensajes(Serial* Arduino)
@@ -408,6 +412,7 @@ void guardar_en_disco(int v[], int n)
 	{
 		for (i = 0; i < n; i++)
 			fprintf(fichero, "%d ", v[i]);
+		
 		fclose(fichero);
 	}
 }
@@ -468,18 +473,26 @@ alarma leer(void)
 	getchar();
 	alarma alarma;
 	char intro;
+
 	printf("Introduzca nueva alarma\n");
 	printf("========================\n");
 	printf("nombre:");
 	gets_s(alarma.login, LONGCAD);
+	printf("año:");
+	gets_s(alarma.anio, LONGCAD);
+	printf("mes:");
+	gets_s(alarma.mes, LONGCAD);
+	printf("dia:");
+	gets_s(alarma.dia, LONGCAD);
 	printf("hora:");
-	scanf_s("%d", &alarma.h);
+	gets_s(alarma.h, LONGCAD);
 	printf("minutos:");
-	scanf_s("%d", &alarma.m);
+	gets_s(alarma.m, LONGCAD);
 	printf("segundos:");
-	scanf_s("%d", &alarma.s);
+	gets_s(alarma.s, LONGCAD);
 	printf("\n");
 	intro = getchar();
+
 	return alarma;
 }
 
@@ -488,6 +501,7 @@ int nueva_alarma(Nodo** plista)
 	Nodo* cab = *plista;
 	Nodo* p;
 	int cod_error = 0;
+	
 	p = (Nodo*)malloc(sizeof(Nodo));
 	if (p == NULL)
 	{
@@ -501,6 +515,7 @@ int nueva_alarma(Nodo** plista)
 		cab = p;
 	}
 	*plista = cab;
+	
 	return cod_error;
 }
 
@@ -573,10 +588,151 @@ int eliminar(Nodo** lista)
 	return encontrado;
 }
 
+void verifica_sensores(Serial* Arduino, Nodo* lista)
+{
+	Nodo* p;
+	if (Arduino->IsConnected())
+	{
+
+		if (lista == NULL)
+			printf("En este momento no hay alarmas en la aplicación\n");
+		else
+		{
+
+			for (p = lista; p != NULL; p = (Nodo*)p->enlace)
+			{
+				leer_sensor_distancia(Arduino, p->alarma);
+
+
+			}
+			printf("\n");
+		}
+	}
+	else
+	{
+		printf("Arduino no conectado");
+	}
+
+}
+
+void leer_cont(Serial* Arduino, char c[LONGCAD])
+{
+	int bytesRecibidos;
+	char mensaje_recibido[MAX_BUFFER];
+	bytesRecibidos = Enviar_y_Recibir(Arduino, c, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+
+}
+
+void leer_sensor_distancia(Serial* Arduino, alarma a)
+{
+
+	int bytesRecibidos;
+	char mensaje_recibido[MAX_BUFFER];
+
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.login, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.anio, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.mes, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.dia, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.h, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.m, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+	bytesRecibidos = Enviar_y_Recibir(Arduino, a.s, mensaje_recibido);
+	if (bytesRecibidos <= 0)
+	{
+		printf("\nNo se ha recibido respuesta a la petición\n");
+
+	}
+	else
+	{
+		printf("\nLa respuesta recibida tiene %d bytes. Recibido=%s\n", bytesRecibidos,
+			mensaje_recibido);
+
+	}
+
+}
+
 int escribir_fichero_usuarios_v3(Nodo* lista)
 {
 	FILE* fichero;
 	errno_t err;
+	
 	err = fopen_s(&fichero, "Usuarios.bin", "wb");
 	if (err == 0) // Si el fichero se ha podido crear
 	{
@@ -589,7 +745,8 @@ int escribir_fichero_usuarios_v3(Nodo* lista)
 	}
 	else
 		printf("Se ha producido un problema a la hora de grabar el fichero de usuarios\n");
-			return err;
+	
+	return err;
 }
 
 Nodo* leer_fichero_usuarios_v3(void)
@@ -598,6 +755,7 @@ Nodo* leer_fichero_usuarios_v3(void)
 	alarma u;
 	FILE* fichero; // Puntero para manipular el fichero
 	errno_t cod_error; // Código de error tras el proceso de apertura.
+	
 	cod_error = fopen_s(&fichero, "Usuarios.bin", "rb"); // Se intenta abrir el fichero
 	if (cod_error != 0) // Si el fichero no se ha podido abrir
 		cab = NULL; // La lista estará vacía
@@ -622,5 +780,6 @@ Nodo* leer_fichero_usuarios_v3(void)
 		}
 		fclose(fichero);
 	}
+	
 	return cab;
 }
