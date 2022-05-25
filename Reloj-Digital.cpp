@@ -92,7 +92,7 @@ int main(void)
 			        {
 				    fyh = Date_Time();
 
-				    strcpy(fechayhora, fyh);
+				    strcpy_s(fechayhora, fyh);
 
 				    Arduino->WriteData(fechayhora, strlen(fechayhora));
 			        }
