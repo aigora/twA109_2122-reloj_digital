@@ -15,6 +15,8 @@
 #define SI 1
 #define NO 0
 
+#pragma warning (disable : 4996) // Elimina la advertencia que se da al utilizar visual debido a que ciertas funciones pueden requerir un _s
+
 typedef struct 
 {
 	char login[LONGCAD];
@@ -92,7 +94,7 @@ int main(void)
 			        {
 				    fyh = Date_Time();
 
-				    strcpy_s(fechayhora, fyh);
+				    strcpy(fechayhora, fyh);
 
 				    Arduino->WriteData(fechayhora, strlen(fechayhora));
 			        }
