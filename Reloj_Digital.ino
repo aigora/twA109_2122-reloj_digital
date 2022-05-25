@@ -46,7 +46,6 @@ int a = 0;
 int b = 0;
 
 // Notas para el tono de la alarma
-// Canción: Bella Ciao
 int Si2 =1975;
 int LaS2=1864;
 int La2= 1760;
@@ -339,25 +338,25 @@ void alarma(void)
       i = total_alarmas;
 
       str = Serial.readStringUntil('\n');
-      alarma[i].login = str;
+      alarmas[i].login = str;
       Serial.println(str);// Envía la respuesta a través del puerto serie.
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
-      alarma[i].anio = str.toInt();
+      alarmas[i].anio = str.toInt();
       Serial.println(str);
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
-      alarma[i].mes = str.toInt();
+      alarmas[i].mes = str.toInt();
       Serial.println(str);
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
-      alarma[i].dia = str.toInt();
+      alarmas[i].dia = str.toInt();
       Serial.println(str);
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
-      alarma[i].h = str.toInt();
+      alarmas[i].h = str.toInt();
       Serial.println(str);
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
-      alarma[i].m = str.toInt();
+      alarmas[i].m = str.toInt();
       Serial.println(str);
       str = Serial.readStringUntil('\n'); // Lee una cadena hasta \n
-      alarma[i].s = str.toInt();
+      alarmas[i].s = str.toInt();
       Serial.println(str);
       
       total_alarmas++;
