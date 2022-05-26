@@ -90,7 +90,7 @@ int main(void)
 		        {
 		        case 1: 
 	                        fyh = Date_Time();
-			        Arduino->WriteData(fechayhora, strlen(fechayhora));
+			        Arduino->WriteData(fyh, strlen(fyh));
 				break;
 		        case 2: 
 				lista=leer_fichero_usuarios_v3();
