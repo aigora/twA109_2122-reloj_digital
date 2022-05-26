@@ -71,7 +71,6 @@ int main(void)
 	int c = 0;
 	char opc;
 	char cad[LONGCAD];
-	char fechayhora[TAM];
 	char* fyh;
 	
 	setlocale(LC_ALL, "es-ES");
@@ -90,14 +89,8 @@ int main(void)
 		        switch (opcion)
 		        {
 		        case 1: 
-				if (Arduino->IsConnected())
-			        {
-				    fyh = Date_Time();
-
-				    strcpy(fechayhora, fyh);
-
-				    Arduino->WriteData(fechayhora, strlen(fechayhora));
-			        }
+	                        fyh = Date_Time();
+			        Arduino->WriteData(fechayhora, strlen(fechayhora));
 				break;
 		        case 2: 
 				lista=leer_fichero_usuarios_v3();
