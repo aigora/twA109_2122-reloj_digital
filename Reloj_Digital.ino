@@ -17,6 +17,7 @@ struct fyhalarma
 };
 
 enum {principal, hora, alarm, crono} estado;
+enum {inicio, contador} cronom;
 
 // Funciones prototipo
 void imprimir(String cadena);
