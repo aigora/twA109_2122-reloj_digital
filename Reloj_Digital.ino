@@ -243,11 +243,18 @@ void cronometro(void)
 
   if( Serial.available()> 0) 
         opcion = Serial.read();
-
-  inicio:
-  if (opcion=='1')
+  
+  switch(cronom)
+ {
+  case inicio:
   {
-    contador:
+    if (opcion=='1')
+       cronom = contador;
+
+    break;
+  }
+  case contador:
+  {
     a = 1;
     b = 0;
     while (a == 1)
@@ -289,11 +296,10 @@ void cronometro(void)
         lcd.setCursor(12, 1);
         String dec = (String)decimas;
         imprimir(dec);
-      
         if( Serial.available()> 0) 
            opcion = Serial.read();
-        
-        if (opcion=='2')      
+
+        if (opcion=='2')   
         {
         delay(200);
           a = 0;
@@ -305,7 +311,8 @@ void cronometro(void)
         
             if (opcion=='1') 
             {
-            goto contador;   
+               a = 1;
+               b = 0;
             }
             if (opcion=='3')   
             { 
@@ -316,16 +323,18 @@ void cronometro(void)
               segundos = 0;
               decimas = 0;
               cuenta = 0;
-              lcd.clear();
               delay(200);
-              goto inicio;    
+
+              break;
              }
+             else
+                cronom = inicio;
           }
         }
-       
+     }
     }
+    break;
   }
- }
 }  
 
 void alarma(void)
