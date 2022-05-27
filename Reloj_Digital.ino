@@ -336,6 +336,7 @@ void cronometro(void)
     }
     break;
   }
+  }
 }  
 
 void alarma(void)
